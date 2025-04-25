@@ -2,64 +2,83 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Affichage des anomalies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affichage des Anomalies</title>
     <style>
-        .anomalie {
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background-color: #f9f9f9;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        .anomalie img {
-            max-width: 300px;
-            height: auto;
-            display: block;
-            margin-bottom: 10px;
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        img {
+            width: 100px; /* Set a width for the image */
         }
     </style>
 </head>
 <body>
+    <h1>Liste des Anomalies</h1>
+    <table id="anomaliesTable">
+        <thead>
+            <tr>
+                <th>Horodateur</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Image d'Anomalie</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Les données seront insérées ici par JavaScript -->
+        </tbody>
+    </table>
 
-<h2>Liste des anomalies</h2>
-<div id="content"></div>
+    <script>
+        const anomalies = [
+            {
+                horodateur: "25/04/2025 11:15:37",
+                type: "Option 2",
+                description: "Anomalie dans four",
+                imageLink: "https://drive.google.com/uc?export=view&id=1EFwe4gjezEAZYU8CUtiClSNRYz529bLm"
+            },
+            {
+                horodateur: "25/04/2025 11:53:57",
+                type: "Option 4",
+                description: "Anomalie sur le site de Agadir br cru",
+                imageLink: "https://drive.google.com/uc?export=view&id=1dowmPesrxWDgaCp9SZI_74KdF8b5LLwM"
+            }
+        ];
 
-<script>
-    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?gid=1768493748&single=true&output=csv';
+        function displayAnomalies() {
+            const tableBody = document.getElementById('anomaliesTable').getElementsByTagName('tbody')[0];
 
-    fetch(sheetURL)
-        .then(response => response.text())
-        .then(csv => {
-            const rows = csv.trim().split('\n');
-            const contentDiv = document.getElementById('content');
-
-            rows.forEach((row, index) => {
-                if (index === 0) return; // Ignorer l'en-tête
-
-                const columns = row.split(',');
-                const imageLink = columns[4].trim(); // lien direct déjà prêt
-                const description = columns[1]?.trim() || "Pas de description";
-
-                if (imageLink && imageLink.startsWith("https://drive.google.com/uc")) {
-                    const div = document.createElement('div');
-                    div.className = 'anomalie';
-
-                    const img = document.createElement('img');
-                    img.src = imageLink;
-                    img.alt = 'Anomalie';
-
-                    const p = document.createElement('p');
-                    p.textContent = description;
-
-                    div.appendChild(img);
-                    div.appendChild(p);
-                    contentDiv.appendChild(div);
-                } else {
-                    console.warn("Lien image invalide ou manquant à la ligne", index + 1);
-                }
+            anomalies.forEach(anomaly => {
+                const row = tableBody.insertRow();
+                row.insertCell(0).innerText = anomaly.horodateur;
+                row.insertCell(1).innerText = anomaly.type;
+                row.insertCell(2).innerText = anomaly.description;
+                const imgCell = row.insertCell(3);
+                const img = document.createElement('img');
+                img.src = anomaly.imageLink;
+                img.alt = "Image d'anomalie";
+                imgCell.appendChild(img);
             });
-        })
-        .catch(error => console.error('Erreur lors du chargement du fichier CSV :', error));
-</script>
+        }
 
+        window.onload = displayAnomalies;
+    </script>
 </body>
 </html>
