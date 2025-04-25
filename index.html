@@ -1,113 +1,73 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Suivi des Anomalies</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #2c3e50;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .content {
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-    }
-
-    .anomalie {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      margin: 20px;
-      width: 300px;
-      text-align: center;
-      overflow: hidden;
-      transition: transform 0.3s;
-    }
-
-    .anomalie:hover {
-      transform: scale(1.05);
-    }
-
-    .anomalie img {
-      width: 100%;
-      height: auto;
-      border-bottom: 2px solid #f0f0f0;
-    }
-
-    .anomalie p {
-      padding: 15px;
-      font-size: 16px;
-      color: #333;
-    }
-
-    .footer {
-      background-color: #2c3e50;
-      color: #fff;
-      text-align: center;
-      padding: 10px;
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Images from Google Sheets</title>
+    <style>
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .anomalie {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .anomalie p {
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>Suivi des Anomalies</h1>
-    <p>Liste des anomalies détectées avec leur image et description</p>
-  </header>
+<div id="content"></div>
 
-  <div class="content" id="content">
-    <!-- Les anomalies seront affichées ici -->
-  </div>
+<script>
+    const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?gid=1768493748&single=true&output=csv';
+    
+    // Fetch the CSV data from the public Google Sheet URL
+    fetch(sheetURL)
+        .then(response => response.text())  // Get the CSV as plain text
+        .then(csv => {
+            const rows = csv.split('\n');  // Split the CSV into rows
+            const contentDiv = document.getElementById('content');
+            
+            // Loop through the rows and create HTML elements for images and descriptions
+            rows.forEach((row, index) => {
+                if (index === 0) return;  // Skip the header row (if you have one)
 
-  <footer class="footer">
-    <p>&copy; 2025 Suivi des anomalies - Tous droits réservés</p>
-  </footer>
+                const columns = row.split(',');  // Split each row into columns
 
-  <script>
-    // Remplace TON_LIEN_API par l'URL de ton API Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbwFMNHjGHimujtsdci3jzq-jAw4mI7sa4lNS-L1tjR7p6_sUh3jSzWrdI257fXE0i2e/exec')
-      .then(response => response.json())
-      .then(data => {
-        const contentDiv = document.getElementById('content');
-        data.forEach(item => {
-          const anomalyDiv = document.createElement('div');
-          anomalyDiv.classList.add('anomalie');
-          
-          // Créer l'image
-          const img = document.createElement('img');
-          img.src = item.image; // Lien public de l'image
-          img.alt = 'Anomalie';
-          
-          // Créer la description
-          const description = document.createElement('p');
-          description.textContent = item.description; // Description de l'anomalie
-          
-          anomalyDiv.appendChild(img);
-          anomalyDiv.appendChild(description);
-          
-          contentDiv.appendChild(anomalyDiv);
-        });
-      })
-      .catch(error => console.log('Erreur de chargement des données: ', error));
-  </script>
+                const imageLink = columns[4]; // Column E (Image link)
+                const description = columns[1]; // Column B (Description)
+
+                if (imageLink && description) {  // Only process rows with image links
+                    const anomalyDiv = document.createElement('div');
+                    anomalyDiv.classList.add('anomalie');
+
+                    // Create the image element
+                    const img = document.createElement('img');
+                    img.src = imageLink;  // Set the image source to the public image URL
+                    img.alt = 'Anomalie';
+
+                    // Create the description element
+                    const descriptionPara = document.createElement('p');
+                    descriptionPara.textContent = description;  // Set the description text
+
+                    // Append the image and description to the anomaly div
+                    anomalyDiv.appendChild(img);
+                    anomalyDiv.appendChild(descriptionPara);
+
+                    // Append the anomaly div to the content div
+                    contentDiv.appendChild(anomalyDiv);
+                }
+            });
+        })
+        .catch(error => console.log('Error loading CSV data:', error));
+</script>
 
 </body>
 </html>
