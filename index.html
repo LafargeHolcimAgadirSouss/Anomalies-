@@ -27,46 +27,49 @@
 
 <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?gid=1768493748&single=true&output=csv';
-    
-    // Fetch the CSV data from the public Google Sheet URL
+
+    // Fonction pour transformer un lien Drive en lien image direct
+    function getImageURL(link) {
+        if (!link) return '';
+        const match = link.match(/[-\w]{25,}/);
+        if (match) {
+            return `https://drive.google.com/uc?export=view&id=${match[0]}`;
+        }
+        return link;
+    }
+
+    // Charger les données du fichier CSV
     fetch(sheetURL)
-        .then(response => response.text())  // Get the CSV as plain text
+        .then(response => response.text())
         .then(csv => {
-            const rows = csv.split('\n');  // Split the CSV into rows
+            const rows = csv.trim().split('\n');
             const contentDiv = document.getElementById('content');
-            
-            // Loop through the rows and create HTML elements for images and descriptions
+
             rows.forEach((row, index) => {
-                if (index === 0) return;  // Skip the header row (if you have one)
+                if (index === 0) return; // Ignorer l'en-tête
 
-                const columns = row.split(',');  // Split each row into columns
+                const columns = row.split(',');
+                const imageLink = columns[4]; // Colonne E
+                const description = columns[1]; // Colonne B
 
-                const imageLink = columns[5]; // Column E (Image link)
-                const description = columns[2]; // Column B (Description)
-
-                if (imageLink && description) {  // Only process rows with image links
+                if (imageLink && description) {
                     const anomalyDiv = document.createElement('div');
                     anomalyDiv.classList.add('anomalie');
 
-                    // Create the image element
                     const img = document.createElement('img');
-                    img.src = imageLink;  // Set the image source to the public image URL
+                    img.src = getImageURL(imageLink); // lien corrigé
                     img.alt = 'Anomalie';
 
-                    // Create the description element
                     const descriptionPara = document.createElement('p');
-                    descriptionPara.textContent = description;  // Set the description text
+                    descriptionPara.textContent = description;
 
-                    // Append the image and description to the anomaly div
                     anomalyDiv.appendChild(img);
                     anomalyDiv.appendChild(descriptionPara);
-
-                    // Append the anomaly div to the content div
                     contentDiv.appendChild(anomalyDiv);
                 }
             });
         })
-        .catch(error => console.log('Error loading CSV data:', error));
+        .catch(error => console.log('Erreur lors du chargement du CSV :', error));
 </script>
 
 </body>
