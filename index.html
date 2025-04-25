@@ -1,44 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Images from Google Sheets</title>
+    <title>Affichage des anomalies</title>
     <style>
-        img {
-            max-width: 100%;
-            height: auto;
-        }
         .anomalie {
             margin-bottom: 20px;
             border: 1px solid #ddd;
             padding: 10px;
             background-color: #f9f9f9;
         }
-        .anomalie p {
-            font-size: 16px;
-            color: #333;
+        .anomalie img {
+            max-width: 300px;
+            height: auto;
+            display: block;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
+<h2>Liste des anomalies</h2>
 <div id="content"></div>
 
 <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?gid=1768493748&single=true&output=csv';
 
-    // Fonction pour transformer un lien Drive en lien image direct
-    function getImageURL(link) {
-        if (!link) return '';
-        const match = link.match(/[-\w]{25,}/);
-        if (match) {
-            return `https://drive.google.com/uc?export=view&id=${match[0]}`;
-        }
-        return link;
-    }
-
-    // Charger les données du fichier CSV
     fetch(sheetURL)
         .then(response => response.text())
         .then(csv => {
@@ -49,27 +36,29 @@
                 if (index === 0) return; // Ignorer l'en-tête
 
                 const columns = row.split(',');
-                const imageLink = columns[4]; // Colonne E
-                const description = columns[1]; // Colonne B
+                const imageLink = columns[4].trim(); // lien direct déjà prêt
+                const description = columns[1]?.trim() || "Pas de description";
 
-                if (imageLink && description) {
-                    const anomalyDiv = document.createElement('div');
-                    anomalyDiv.classList.add('anomalie');
+                if (imageLink && imageLink.startsWith("https://drive.google.com/uc")) {
+                    const div = document.createElement('div');
+                    div.className = 'anomalie';
 
                     const img = document.createElement('img');
-                    img.src = getImageURL(imageLink); // lien corrigé
+                    img.src = imageLink;
                     img.alt = 'Anomalie';
 
-                    const descriptionPara = document.createElement('p');
-                    descriptionPara.textContent = description;
+                    const p = document.createElement('p');
+                    p.textContent = description;
 
-                    anomalyDiv.appendChild(img);
-                    anomalyDiv.appendChild(descriptionPara);
-                    contentDiv.appendChild(anomalyDiv);
+                    div.appendChild(img);
+                    div.appendChild(p);
+                    contentDiv.appendChild(div);
+                } else {
+                    console.warn("Lien image invalide ou manquant à la ligne", index + 1);
                 }
             });
         })
-        .catch(error => console.log('Erreur lors du chargement du CSV :', error));
+        .catch(error => console.error('Erreur lors du chargement du fichier CSV :', error));
 </script>
 
 </body>
