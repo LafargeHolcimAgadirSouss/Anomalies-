@@ -36,9 +36,9 @@
 <table id="dataTable">
   <thead>
     <tr>
-      <th>Column 1</th>
-      <th>Column 2</th>
-      <th>Column 3</th>
+      <th>Horodateur</th>
+      <th>Type</th>
+      <th>Description</th>
       <th>Image</th>
     </tr>
   </thead>
@@ -61,7 +61,7 @@ Papa.parse(sheetURL, {
         const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
 
         data.forEach(row => {
-            if(row['Column 1'] && row['Column 2'] && row['Column 3'] && row['Column 6']) {
+            if(row['Horodateur'] && row['Type '] && row['description '] && row['Colonne 2']) {
                 const tr = tableBody.insertRow();
                 tr.insertCell(0).innerText = row['Horodateur'];
                 tr.insertCell(1).innerText = row['Type '];
