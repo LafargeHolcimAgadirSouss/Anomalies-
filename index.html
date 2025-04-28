@@ -30,50 +30,53 @@
   </style>
 </head>
 <body>
-  <h1>Data from Google Sheets</h1>
-  <table id="dataTable">
-    <thead>
-      <tr>
-        <th>Column 1</th>
-        <th>Column 2</th>
-        <th>Column 3</th>
-        <th>Image</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Data will be inserted here by JavaScript -->
-    </tbody>
-  </table>
 
-  <!-- Load PapaParse to read CSV easily -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script>
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?output=csv";
+<h1>Data from Google Sheets</h1>
 
-    fetch(sheetURL)
-      .then(response => response.text()) // Fetch as text, not json!
-      .then(csvText => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: function(results) {
-            const data = results.data;
-            const tableBody = document.getElementById('dataTable').querySelector('tbody');
+<table id="dataTable">
+  <thead>
+    <tr>
+      <th>Column 1</th>
+      <th>Column 2</th>
+      <th>Column 3</th>
+      <th>Image</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Data will be inserted here -->
+  </tbody>
+</table>
 
-            data.forEach(row => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td>${row['Column 1']}</td>
-                <td>${row['Column 2']}</td>
-                <td>${row['Column 3']}</td>
-                <td><img src="${row['Column 6']}" alt="Image"></td>
-              `;
-              tableBody.appendChild(tr);
-            });
-          }
+<!-- Charger PapaParse -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+<script>
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?output=csv";
+
+Papa.parse(sheetURL, {
+    download: true,
+    header: true,
+    complete: function(results) {
+        const data = results.data;
+        const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+
+        data.forEach(row => {
+            if(row['Column 1'] && row['Column 2'] && row['Column 3'] && row['Column 6']) {
+                const tr = tableBody.insertRow();
+                tr.insertCell(0).innerText = row['Column 1'];
+                tr.insertCell(1).innerText = row['Column 2'];
+                tr.insertCell(2).innerText = row['Column 3'];
+
+                const imgCell = tr.insertCell(3);
+                const img = document.createElement('img');
+                img.src = row['Column 6'];
+                img.alt = "Image";
+                imgCell.appendChild(img);
+            }
         });
-      })
-      .catch(error => console.error("Error fetching data: ", error));
-  </script>
+    }
+});
+</script>
+
 </body>
 </html>
