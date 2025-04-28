@@ -63,13 +63,13 @@ Papa.parse(sheetURL, {
         data.forEach(row => {
             if(row['Column 1'] && row['Column 2'] && row['Column 3'] && row['Column 6']) {
                 const tr = tableBody.insertRow();
-                tr.insertCell(0).innerText = row['Column 1'];
-                tr.insertCell(1).innerText = row['Column 2'];
-                tr.insertCell(2).innerText = row['Column 3'];
+                tr.insertCell(0).innerText = row['Horodateur'];
+                tr.insertCell(1).innerText = row['Type '];
+                tr.insertCell(2).innerText = row['description '];
 
                 const imgCell = tr.insertCell(3);
                 const img = document.createElement('img');
-                img.src = row['Column 6'];
+                img.src = row['Colonne 2'];
                 img.alt = "Image";
                 imgCell.appendChild(img);
             }
