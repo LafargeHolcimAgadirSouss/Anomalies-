@@ -1,74 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Gallery</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-    }
-    .gallery-item {
-      margin: 15px;
-      text-align: center;
-      width: 200px;
-    }
-    .gallery-item img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .description {
-      font-size: 14px;
-      margin-top: 5px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Description</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .item {
+            margin: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 200px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-  <h1 style="text-align: center;">Image Gallery</h1>
-  <div class="gallery" id="gallery"></div>
-  
-  <script>
-    // Fetch image data from Google Apps Script
-    function loadImages() {
-      google.script.run.withSuccessHandler(function(response) {
-        var gallery = document.getElementById("gallery");
-        response.forEach(function(item) {
-          var galleryItem = document.createElement("div");
-          galleryItem.className = "gallery-item";
-          
-          var img = document.createElement("img");
-          img.src = item.imageUrl;
-          img.alt = item.description;
-          
-          var description = document.createElement("p");
-          description.className = "description";
-          description.textContent = item.description;
-          
-          var type = document.createElement("p");
-          type.className = "description";
-          type.textContent = "Type: " + item.type;
-          
-          galleryItem.appendChild(img);
-          galleryItem.appendChild(description);
-          galleryItem.appendChild(type);
-          
-          gallery.appendChild(galleryItem);
-        });
-      }).getImageData();
-    }
-    
-    window.onload = loadImages;
-  </script>
+
+<h1>Upload Image and Description</h1>
+<form id="uploadForm">
+    <input type="file" id="imageInput" accept="image/*" required>
+    <br>
+    <textarea id="descriptionInput" placeholder="Write a description..." required></textarea>
+    <br>
+    <button type="submit">Upload</button>
+</form>
+
+<div id="gallery"></div>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const imageInput = document.getElementById('imageInput');
+        const descriptionInput = document.getElementById('descriptionInput');
+        const gallery = document.getElementById('gallery');
+
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+            const imgElement = document.createElement('div');
+            imgElement.classList.add('item');
+            imgElement.innerHTML = `
+                <img src="${reader.result}" alt="Uploaded Image">
+                <p>${descriptionInput.value}</p>
+            `;
+            gallery.appendChild(imgElement);
+
+            // Here you would send the data to your backend to store in a spreadsheet
+            // For example, using fetch to send a POST request
+            /*
+            fetch('YOUR_BACKEND_URL', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: reader.result,
+                    description: descriptionInput.value
+                })
+            });
+            */
+
+            // Clear the form
+            imageInput.value = '';
+            descriptionInput.value = '';
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
 </body>
 </html>
