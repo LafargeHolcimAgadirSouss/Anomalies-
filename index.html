@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Affichage des Anomalies</title>
+    <title>Google Sheets Data Display</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-
+        
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
-
+        
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
@@ -26,61 +27,61 @@
         }
 
         img {
-            max-width: 100px; /* Set a maximum width for the image */
-            max-height: 100px; /* Set a maximum height for the image */
-            height: auto; /* Maintain aspect ratio */
+            max-width: 100px;
+            max-height: 100px;
+            height: auto;
         }
     </style>
 </head>
 <body>
-    <h1>Liste des Anomalies</h1>
-    <table id="anomaliesTable">
+    <h1>Data from Google Sheets</h1>
+    <table id="dataTable">
         <thead>
             <tr>
-                <th>Horodateur</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Image d'Anomalie</th>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th>Image</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Les données seront insérées ici par JavaScript -->
+            <!-- Data will be inserted here by JavaScript -->
         </tbody>
     </table>
 
     <script>
-        const anomalies = [
-            {
-                horodateur: "25/04/2025 11:15:37",
-                type: "Option 2",
-                description: "Anomalie dans four",
-                imageLink: "https://drive.google.com/uc?export=view&id=1EFwe4gjezEAZYU8CUtiClSNRYz529bLm"
-            },
-            {
-                horodateur: "25/04/2025 11:53:57",
-                type: "Option 4",
-                description: "Anomalie sur le site de Agadir br cru",
-                imageLink: "https://drive.google.com/uc?export=view&id=1dowmPesrxWDgaCp9SZI_74KdF8b5LLwM"
-            }
-        ];
+        // URL for fetching the Google Sheets data as JSON
+        const sheetURL = "https://spreadsheets.google.com/feeds/list/YOUR_SHEET_ID/od6/public/values?alt=json";
 
-        function displayAnomalies() {
-            const tableBody = document.getElementById('anomaliesTable').getElementsByTagName('tbody')[0];
+        // Fetch data from Google Sheets
+        fetch(sheetURL)
+            .then(response => response.json())
+            .then(data => {
+                const entries = data.feed.entry;
+                const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
 
-            anomalies.forEach(anomaly => {
-                const row = tableBody.insertRow();
-                row.insertCell(0).innerText = anomaly.horodateur;
-                row.insertCell(1).innerText = anomaly.type;
-                row.insertCell(2).innerText = anomaly.description;
-                const imgCell = row.insertCell(3);
-                const img = document.createElement('img');
-                img.src = anomaly.imageLink;
-                img.alt = "Image d'anomalie";
-                imgCell.appendChild(img);
-            });
-        }
+                entries.forEach(entry => {
+                    // Extract the data from the Google Sheets columns
+                    const column1 = entry.gsx$column1.$t;
+                    const column2 = entry.gsx$column2.$t;
+                    const column3 = entry.gsx$column3.$t;
+                    const imageLink = entry.gsx$column6.$t;
 
-        window.onload = displayAnomalies;
+                    // Create a new row and add the data to the table
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).innerText = column1;
+                    row.insertCell(1).innerText = column2;
+                    row.insertCell(2).innerText = column3;
+
+                    // Create and add the image to the table
+                    const imgCell = row.insertCell(3);
+                    const img = document.createElement('img');
+                    img.src = imageLink;
+                    img.alt = "Image";
+                    imgCell.appendChild(img);
+                });
+            })
+            .catch(error => console.error("Error fetching data: ", error));
     </script>
 </body>
 </html>
