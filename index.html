@@ -2,26 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Google Drive Image</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Gallery</title>
   <style>
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      font-family: Arial, sans-serif;
       margin: 0;
-      background-color: #fafafa;
+      padding: 0;
+      background-color: #f4f4f4;
     }
-    img {
-      max-width: 80%;
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .gallery-item {
+      margin: 15px;
+      text-align: center;
+      width: 200px;
+    }
+    .gallery-item img {
+      width: 100%;
       height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .description {
+      font-size: 14px;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <!-- Image displayed from Google Drive -->
-  <img src="https://drive.google.com/uc?id=1dowmPesrxWDgaCp9SZI_74KdF8b5LLwM" alt="Image from Google Drive">
+  <h1 style="text-align: center;">Image Gallery</h1>
+  <div class="gallery" id="gallery"></div>
+  
+  <script>
+    // Fetch image data from Google Apps Script
+    function loadImages() {
+      google.script.run.withSuccessHandler(function(response) {
+        var gallery = document.getElementById("gallery");
+        response.forEach(function(item) {
+          var galleryItem = document.createElement("div");
+          galleryItem.className = "gallery-item";
+          
+          var img = document.createElement("img");
+          img.src = item.imageUrl;
+          img.alt = item.description;
+          
+          var description = document.createElement("p");
+          description.className = "description";
+          description.textContent = item.description;
+          
+          var type = document.createElement("p");
+          type.className = "description";
+          type.textContent = "Type: " + item.type;
+          
+          galleryItem.appendChild(img);
+          galleryItem.appendChild(description);
+          galleryItem.appendChild(type);
+          
+          gallery.appendChild(galleryItem);
+        });
+      }).getImageData();
+    }
+    
+    window.onload = loadImages;
+  </script>
 </body>
 </html>
