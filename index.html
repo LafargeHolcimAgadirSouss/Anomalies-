@@ -2,81 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Sheets Data Display</title>
+  <title>Display Image from URL</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
+
+    .image-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
     }
-    th {
-      background-color: #f2f2f2;
-    }
+
     img {
-      max-width: 100px;
-      max-height: 100px;
+      max-width: 100%;
       height: auto;
+      border-radius: 10px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
 
-<h1>Data from Google Sheets</h1>
+  <h1>Image from Google Sheet URL</h1>
+  <div class="image-container" id="imageContainer">
+    <!-- Image will appear here -->
+  </div>
 
-<table id="dataTable">
-  <thead>
-    <tr>
-      <th>Horodateur</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Image</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Data will be inserted here -->
-  </tbody>
-</table>
+  <script>
+    // Simulating a URL you would get from a Google Sheet
+    const imageURL = "https://drive.google.com/uc?export=view&id=1Df2fe02kLMPl7JF1IwxhVFKdn10_jTgA"; // Replace with your real URL
 
-<!-- Charger PapaParse -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    // Create an <img> element
+    const img = document.createElement("img");
+    img.src = imageURL;
+    img.alt = "Fetched from Google Sheet";
 
-<script>
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT_C2LQs5q5x3vlCnJYJhZnwHC31sEPMSP21XTw2fxszMe8no2Q2oLM3Fe7IqvftPI3_2-JlITASVlM/pub?output=csv";
-
-Papa.parse(sheetURL, {
-    download: true,
-    header: true,
-    complete: function(results) {
-        const data = results.data;
-        const tableBody = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
-
-        data.forEach(row => {
-            if(row['Horodateur'] && row['Type '] && row['description '] && row['Colonne 2']) {
-                const tr = tableBody.insertRow();
-                tr.insertCell(0).innerText = row['Horodateur'];
-                tr.insertCell(1).innerText = row['Type '];
-                tr.insertCell(2).innerText = row['description '];
-
-                const imgCell = tr.insertCell(3);
-                const img = document.createElement('img');
-                img.src = row['Colonne 2'];
-                img.alt = "Image";
-                imgCell.appendChild(img);
-            }
-        });
-    }
-});
-</script>
+    // Insert the image into the page
+    const container = document.getElementById("imageContainer");
+    container.appendChild(img);
+  </script>
 
 </body>
 </html>
