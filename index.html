@@ -2,61 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Display Image from URL</title>
+  <title>Google Drive Image Test</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
-      padding: 20px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      height: 100vh;
+      background-color: #fafafa;
+      margin: 0;
     }
-
-    h1 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    .image-container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
     img {
-      max-width: 100%;
+      max-width: 90%;
       height: auto;
       border-radius: 10px;
-      margin-top: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
   </style>
 </head>
 <body>
 
-  <h1>Image from Google Sheet URL</h1>
-  <div class="image-container" id="imageContainer">
-    <!-- Image will appear here -->
-  </div>
-
-  <script>
-    // Simulating a URL you would get from a Google Sheet
-    const imageURL = "https://drive.google.com/uc?export=view&id=1Df2fe02kLMPl7JF1IwxhVFKdn10_jTgA"; // Replace with your real URL
-
-    // Create an <img> element
-    const img = document.createElement("img");
-    img.src = imageURL;
-    img.alt = "Fetched from Google Sheet";
-
-    // Insert the image into the page
-    const container = document.getElementById("imageContainer");
-    container.appendChild(img);
-  </script>
+  <img src="https://drive.google.com/uc?id=1Df2fe02kLMPl7JF1IwxhVFKdn10_jTgA" alt="Image from Google Drive">
 
 </body>
 </html>
