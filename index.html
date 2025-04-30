@@ -1,88 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload and Description</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #gallery {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .item {
-            margin: 10px;
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 200px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Affichage d'une image</title>
 </head>
 <body>
-
-<h1>Upload Image and Description</h1>
-<form id="uploadForm">
-    <input type="file" id="imageInput" accept="image/*" required>
-    <br>
-    <textarea id="descriptionInput" placeholder="Write a description..." required></textarea>
-    <br>
-    <button type="submit">Upload</button>
-</form>
-
-<div id="gallery"></div>
-
-<script>
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const imageInput = document.getElementById('imageInput');
-        const descriptionInput = document.getElementById('descriptionInput');
-        const gallery = document.getElementById('gallery');
-
-        const file = imageInput.files[0];
-        const reader = new FileReader();
-
-        reader.onloadend = function() {
-            const imgElement = document.createElement('div');
-            imgElement.classList.add('item');
-            imgElement.innerHTML = `
-                <img src="${reader.result}" alt="Uploaded Image">
-                <p>${descriptionInput.value}</p>
-            `;
-            gallery.appendChild(imgElement);
-
-            // Here you would send the data to your backend to store in a spreadsheet
-            // For example, using fetch to send a POST request
-            
-            fetch('https://script.google.com/macros/s/AKfycbxGaRaSxQCZkeoNncMbnz3HRNlEdgVGMjZgvzRmDpR6KpgfXjOG0jVDnitcsUg_DgMy/exec', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    image: reader.result,
-                    description: descriptionInput.value
-                })
-            });
-            
-
-            // Clear the form
-            imageInput.value = '';
-            descriptionInput.value = '';
-        };
-
-        if (file) {
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
-
+  <h2>Mon image d'alerte</h2>
+  <img src="https://drive.google.com/uc?export=view&id=1ttyUhFSKRznAnD95voTsHkq_YtnJfAEc" alt="Icône d'alerte" width="100" height="100">
 </body>
 </html>
