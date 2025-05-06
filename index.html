@@ -1,78 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Image Uploader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload des Images</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: Arial, sans-serif;
+      margin: 20px;
     }
-    input, textarea {
-      display: block;
+    input, textarea, select, button {
       margin: 10px 0;
       width: 300px;
+      padding: 10px;
     }
-    #preview img {
-      width: 200px;
+    #preview {
+      margin-top: 20px;
+    }
+    img {
+      width: 100px;
       margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>Upload Image with Description</h2>
+
+  <h2>Upload des Images d'Anomalies d'Équipements</h2>
   <form id="uploadForm">
-    <input type="file" id="imageInput" accept="image/*" required>
-    <textarea id="description" placeholder="Description..." required></textarea>
-    <button type="submit">Upload</button>
+    <select id="equipmentSelect" required>
+      <option value="" disabled selected>Choisir l'équipement</option>
+      <option value="EquipementA">Equipement A</option>
+      <option value="EquipementB">Equipement B</option>
+      <option value="EquipementC">Equipement C</option>
+    </select>
+    <input type="file" id="imageInput" accept="image/*" multiple required>
+    <textarea id="description" placeholder="Description de l'anomalie..." required></textarea>
+    <button type="submit">Envoyer les Images</button>
   </form>
+
   <div id="preview"></div>
+
+  <button id="generateReport" style="display:none;">Générer Rapport PDF</button>
 
   <script>
     const form = document.getElementById('uploadForm');
     const imageInput = document.getElementById('imageInput');
     const descriptionInput = document.getElementById('description');
     const preview = document.getElementById('preview');
-
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwY5esl_XNeoRycm4gX4WBjppkeopdlJUUbSnZ8hNE-MLmT02h50nY2guzGJvH8PhETIw/exec'; // replace with your Apps Script URL
+    const generateReportButton = document.getElementById('generateReport');
+    const equipmentSelect = document.getElementById('equipmentSelect');
+    const SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE'; // Remplace avec l'URL de ton Web App Apps Script
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const file = imageInput.files[0];
-      if (!file) return alert("No file selected");
+      const files = imageInput.files;
+      const equipment = equipmentSelect.value;
+      const description = descriptionInput.value;
 
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result.split(',')[1];
+      if (!files.length || !equipment || !description) return alert("Tous les champs sont obligatoires.");
 
-        const formData = new URLSearchParams();
-        formData.append("image", base64);
-        formData.append("description", descriptionInput.value);
-        formData.append("mimeType", file.type);
-        formData.append("fileName", file.name);
+      for (let file of files) {
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64 = reader.result.split(',')[1];
 
-        try {
-          const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: formData
-          });
+          const formData = new URLSearchParams();
+          formData.append("image", base64);
+          formData.append("description", description);
+          formData.append("mimeType", file.type);
+          formData.append("fileName", file.name);
+          formData.append("equipment", equipment);
 
-          const result = await response.json();
-          if (result.success) {
-            preview.innerHTML = `
-              <p>Uploaded successfully!</p>
-              <a href="${result.fileUrl}" target="_blank">View File</a>
-              <img src="${result.fileUrl}">
-            `;
-          } else {
-            preview.innerHTML = `<p>Error: ${result.error}</p>`;
+          try {
+            const response = await fetch(SCRIPT_URL, {
+              method: 'POST',
+              body: formData
+            });
+
+            const result = await response.json();
+            if (result.success) {
+              preview.innerHTML += `
+                <p>${file.name} - <a href="${result.fileUrl}" target="_blank">Voir l'image</a></p>
+                <img src="${result.fileUrl}" />
+              `;
+              generateReportButton.style.display = 'block';  // Affiche le bouton "Générer Rapport"
+            } else {
+              preview.innerHTML += `<p>Erreur pour ${file.name}: ${result.error}</p>`;
+            }
+          } catch (err) {
+            preview.innerHTML += `<p>Erreur pour ${file.name}: ${err.message}</p>`;
           }
-        } catch (err) {
-          preview.innerHTML = `<p>Request failed: ${err.message}</p>`;
-        }
-      };
-      reader.readAsDataURL(file);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Fonction pour générer le rapport PDF
+    generateReportButton.addEventListener('click', () => {
+      // Code pour générer le rapport PDF
+      alert("Le rapport PDF sera généré ici.");
     });
   </script>
+
 </body>
 </html>
